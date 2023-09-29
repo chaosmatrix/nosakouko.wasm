@@ -1,0 +1,197 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch("nosakouko.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+        });
+
+        async function generatePassword() {
+            var obj = {
+                algorithm: algorithm.value,
+                primaryKey: primaryKey.value,
+                secretFile: "",
+                site :     site.value,
+                userName:   userName.value,
+                salt   :    salt.value,
+                round  :    round.value,
+                lengthx :    lengthx.value,
+            }
+            try {
+                await GeneratePassword(obj)
+            } catch (err) {
+                console.error(err)
+            }
+        }
+
+    </script>
+</head>
+<body>
+    <style>
+        .inputc {
+            font-size: 16;
+        }
+
+        .output {
+            font-size: 16;
+            background: rgb(253, 255, 253);
+        }
+    </style>
+    <h2>Nosakouko Password Generater</h2>
+        <div>
+            <table>
+                <tr>
+                    <td>Algorithm: </td>
+                    <td><select name="algorithm" id="algorithm" class="inputc">
+                        <option value="HMAC-BLAKE2b-256">HMAC-BLAKE2b-256</option>
+                        <option value="HMAC-BLAKE2b-384">HMAC-BLAKE2b-384</option>
+                        <option value="HMAC-BLAKE2b-512">HMAC-BLAKE2b-512</option>
+                        <option value="HMAC-BLAKE2s-256">HMAC-BLAKE2s-256</option>
+                        <option value="HMAC-MD5">HMAC-MD5</option>
+                        <option value="HMAC-SHA-1">HMAC-SHA-1</option>
+                        <option value="HMAC-SHA-224">HMAC-SHA-224</option>
+                        <option value="HMAC-SHA-256" selected="selected">HMAC-SHA-256</option>
+                        <option value="HMAC-SHA-384">HMAC-SHA-384</option>
+                        <option value="HMAC-SHA-512">HMAC-SHA-512</option>
+                        <option value="HMAC-SHA-512/224">HMAC-SHA-512/224</option>
+                        <option value="HMAC-SHA-512/256">HMAC-SHA-512/256</option>
+                        <option value="HMAC-SHA3-224">HMAC-SHA3-224</option>
+                        <option value="HMAC-SHA3-256">HMAC-SHA3-256</option>
+                        <option value="HMAC-SHA3-384">HMAC-SHA3-384</option>
+                        <option value="HMAC-SHA3-512">HMAC-SHA3-512</option>
+
+                        <option value="HKDF-BLAKE2b-256">HKDF-BLAKE2b-256</option>
+                        <option value="HKDF-BLAKE2b-384">HKDF-BLAKE2b-384</option>
+                        <option value="HKDF-BLAKE2b-512">HKDF-BLAKE2b-512</option>
+                        <option value="HKDF-BLAKE2s-256">HKDF-BLAKE2s-256</option>
+                        <option value="HKDF-MD5">HKDF-MD5</option>
+                        <option value="HKDF-SHA-1">HKDF-SHA-1</option>
+                        <option value="HKDF-SHA-224">HKDF-SHA-224</option>
+                        <option value="HKDF-SHA-256">HKDF-SHA-256</option>
+                        <option value="HKDF-SHA-384">HKDF-SHA-384</option>
+                        <option value="HKDF-SHA-512">HKDF-SHA-512</option>
+                        <option value="HKDF-SHA-512/224">HKDF-SHA-512/224</option>
+                        <option value="HKDF-SHA-512/256">HKDF-SHA-512/256</option>
+                        <option value="HKDF-SHA3-224">HKDF-SHA3-224</option>
+                        <option value="HKDF-SHA3-256">HKDF-SHA3-256</option>
+                        <option value="HKDF-SHA3-384">HKDF-SHA3-384</option>
+                        <option value="HKDF-SHA3-512">HKDF-SHA3-512</option>
+
+                        <option value="PBKDF2-BLAKE2s-256">PBKDF2-BLAKE2s-256</option>
+                        <option value="PBKDF2-BLAKE2b-256">PBKDF2-BLAKE2b-256</option>
+                        <option value="PBKDF2-BLAKE2b-384">PBKDF2-BLAKE2b-384</option>
+                        <option value="PBKDF2-BLAKE2b-512">PBKDF2-BLAKE2b-512</option>
+                        <option value="PBKDF2-MD5">PBKDF2-MD5</option>
+                        <option value="PBKDF2-SHA-1">PBKDF2-SHA-1</option>
+                        <option value="PBKDF2-SHA-224">PBKDF2-SHA-224</option>
+                        <option value="PBKDF2-SHA-256">PBKDF2-SHA-256</option>
+                        <option value="PBKDF2-SHA-384">PBKDF2-SHA-384</option>
+                        <option value="PBKDF2-SHA-512">PBKDF2-SHA-512</option>
+                        <option value="PBKDF2-SHA-512/224">PBKDF2-SHA-512/224</option>
+                        <option value="PBKDF2-SHA-512/256">PBKDF2-SHA-512/256</option>
+                        <option value="PBKDF2-SHA3-224">PBKDF2-SHA3-224</option>
+                        <option value="PBKDF2-SHA3-256">PBKDF2-SHA3-256</option>
+                        <option value="PBKDF2-SHA3-384">PBKDF2-SHA3-384</option>
+                        <option value="PBKDF2-SHA3-512">PBKDF2-SHA3-512</option>
+                    </select><label id="err_algorithm" style="color: red;"></label>
+                    </td>
+                    <td><font color="red">Required</font></td>
+                </tr>
+                <tr>
+                    <td>PrimaryKey: </td>
+                    <td><input id="primaryKey" type="password" class="inputc" required /></td>
+                    <td><font color="red">Required</font></td>
+                </tr>
+                <tr>
+                    <td>SecretFile: </td>
+                    <td><input id="secretFile" type="file" class="inputc" /></td>
+                    <td><font color="black">Optional-(unsupport)</font></td>
+                </tr>
+                <tr>
+                    <td>Site: </td>
+                    <td><input id="site" type="text" class="inputc" /></td>
+                    <td><font color="red">Required</font></td>
+                </tr>
+                <tr>
+                    <td>UserName: </td>
+                    <td><input id="userName", type="text" class="inputc" required /></td>
+                    <td><font color="red">Required</font></td>
+                </tr>
+                <tr>
+                    <td>Salt: </td>
+                    <td><input id="salt", type="text" class="inputc" /></td>
+                    <td><font color="black">Optional</font></td>
+                </tr>
+                <tr>
+                    <td>Round: </td>
+                    <td><input id="round" type="number" class="inputc" value="1" /></td>
+                    <td><font color="black">Optional</font> <label id="err_round" style="color: red;"></label></td>
+                </tr>
+                <tr>
+                    <td>Length: </td>
+                    <td><input id="lengthx" type="number" class="inputc" value="23" required /></td>
+                    <td><font color="red">Required</font> <label id="err_length" style="color: red;"></label></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="b_send" type="submit"  class="inputc"  onclick="generatePassword()">Generate</button></td>
+                    <td></td>
+                </tr>
+            </table>
+</div>
+    <br>
+    <div class="output">
+        <table>
+            <tr>
+                <td>Password: </td>
+                <td><label id="ans_password" style="white-space: pre; display: none;"></label><label id="ans_stars" style="white-space: pre;"></label></td>
+                <td><button id="copy" onclick="copyPassword()">Copy</button></td>
+                <td><button id="show" onclick="showPassword()"><label id="showButtonName"></label></button></td>
+            </tr>
+            <tr>
+                <td>Crypto_Mask: </td>
+                <td><label id="ans_crypto_mask" style="white-space: pre;"></label></td>
+            </tr>
+            <tr>
+                <td>Python_Code: </td>
+                <td><label id="ans_python_code" style="white-space: pre;"></label></td>
+            </tr>
+        </table>
+    </div>
+    <br>
+    <script>
+
+
+        let passwordId = document.getElementById('ans_password');
+        
+        let starsId = document.getElementById('ans_stars');
+
+        let sbn = document.getElementById('showButtonName');
+        sbn.innerHTML = "Show"
+        const showPassword = function(){
+
+            if(passwordId.style.display == 'none'){
+                passwordId.style.display = '';
+                starsId.style.display = 'none'
+                sbn.innerHTML = "Hide"
+            } else {
+                passwordId.style.display = 'none';
+                starsId.style.display = ''
+                sbn.innerHTML = "Show"
+            }
+        }
+        const copyPassword = async () => {
+            let text = document.getElementById('ans_password').innerHTML;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                console.log('copy password to clipboard');
+            } catch (err) {
+                console.error('copy password: ', err);
+            }
+        }
+    </script>
+</body>
+</html>
