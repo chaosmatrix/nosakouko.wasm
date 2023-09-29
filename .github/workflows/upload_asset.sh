@@ -81,7 +81,6 @@ fi
 file_name=${file_path##*/}
 echo "Uploading asset $file_name to $upload_url..."
 curl -f \
-    -v \
     -X POST \
     -H "Authorization: Bearer $bearer" \
     -H "Content-Type: application/octet-stream" \
