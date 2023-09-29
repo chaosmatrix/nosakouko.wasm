@@ -89,9 +89,10 @@ curl -f \
     -H "Content-Type: application/octet-stream" \
     --data-binary @"$file_path" \
     "$upload_url?name=$file_name" \
-    &> /dev/null \
+    &> curl-http.log \
 || { \
-    printf "\e[31mError: Unable to upload asset.\e[0m\n" \
+    cat curl-http.log \
+    && printf "\e[31mError: Unable to upload asset.\e[0m\n" \
     && exit 3; \
 }
 
