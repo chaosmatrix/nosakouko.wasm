@@ -2,20 +2,25 @@
 
 ## Abstract
 
-**Algorithm As A Password**: Use one **Primary Key** generates all password
+**Algorithm As A Password**: Use one **Primary Key** generates all password.
 
 [![nosakoukou](docs/Nosa_Kouko.webp)]()
 
 
 ## Introduction
 
-The key that keeps the generated password safe and strength is to keep the Algorithm (optional) and PrimaryKey (must) safe, others like Site/UserName/Salt etc aren't need to keep safe.
+The Algorithm and PrimaryKey are the keys to remaining the generated password safe and secure.
 
-> 
+>
 > Requirements of Algorithm:
 > 1. Pure function: same input alwasy return same output
 > 2. Strength: enough key space and enough length to make sure password's strength
-> 
+>
+> Requirements of Primary Key:
+> 1. don't forget it
+> 2. keep it secure
+> 3. strong enough
+>
 
 ### Encoder's Key Space
 | Encoder | Key Space | Comment |
