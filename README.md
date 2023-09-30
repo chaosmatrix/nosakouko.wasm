@@ -1,2 +1,45 @@
 # nosakouko.wasm
-Password Generater One-For-All
+
+## Abstract
+
+**Algorithm As A Password**: Use one **Primary Key** generates all password
+
+[![nosakoukou](docs/Nosa_Kouko.webp)]()
+
+
+## Introduction
+
+The key that keeps the generated password safe and strength is to keep the Algorithm (optional) and PrimaryKey (must) safe, others like Site/UserName/Salt etc aren't need to keep safe.
+
+> 
+> Requirements of Algorithm:
+> 1. Pure function: same input alwasy return same output
+> 2. Strength: enough key space and enough length to make sure password's strength
+> 
+
+### Encoder's Key Space
+| Encoder | Key Space | Comment |
+| -- | -- | -- |
+| base64 | 65 | |
+| base85/ascii85 | 85 | |
+
+### Option Table
+| Name | Private | Require | Comment |
+| -- | -- | -- | -- |
+| Algorithm | *  | Y | |
+| Round | * | Y | |
+| Length | * | Y | |
+| PrimaryKey | Y | Y | |
+| SecretFile | Y | Y | not implement |
+| Site | * | Y | |
+| UserName | * | Y | |
+| Salt | * | * |  |
+
+
+## Reference
+1. [RFC4648 - The Base16, Base32, and Base64 Data Encodings](https://datatracker.ietf.org/doc/html/rfc4648.html)
+2. [Binary-to-text encoding](https://en.wikipedia.org/wiki/Binary-to-text_encoding)
+3. [Ascii85 or Base85](https://en.wikipedia.org/wiki/Ascii85)
+4. [Base64](https://en.wikipedia.org/wiki/Base64)
+5. [Password strength](https://en.wikipedia.org/wiki/Password_strength)
+6. [Kouko Nosa - Anime Character](https://hai-furi.fandom.com/wiki/Kouko_Nosa)

@@ -44,7 +44,7 @@
             <table>
                 <tr>
                     <td>Algorithm: </td>
-                    <td><select name="algorithm" id="algorithm" class="inputc">
+                    <td><select name="algorithm" id="algorithm" class="inputc" onchange="generatePassword()">
                         <option value="HMAC-BLAKE2b-256">HMAC-BLAKE2b-256</option>
                         <option value="HMAC-BLAKE2b-384">HMAC-BLAKE2b-384</option>
                         <option value="HMAC-BLAKE2b-512">HMAC-BLAKE2b-512</option>
@@ -101,37 +101,38 @@
                 </tr>
                 <tr>
                     <td>PrimaryKey: </td>
-                    <td><input id="primaryKey" type="password" class="inputc" required /></td>
+                    <td><input id="primaryKey" type="password" class="inputc" onchange="generatePassword()" required /></td>
                     <td><font color="red">Required</font></td>
                 </tr>
-                <tr>
+                <tr style="display: none;">
+                    <!-- not implement -->
                     <td>SecretFile: </td>
                     <td><input id="secretFile" type="file" class="inputc" /></td>
                     <td><font color="black">Optional-(unsupport)</font></td>
                 </tr>
                 <tr>
                     <td>Site: </td>
-                    <td><input id="site" type="text" class="inputc" /></td>
+                    <td><input id="site" type="text" class="inputc" onchange="generatePassword()" /></td>
                     <td><font color="red">Required</font></td>
                 </tr>
                 <tr>
                     <td>UserName: </td>
-                    <td><input id="userName", type="text" class="inputc" required /></td>
+                    <td><input id="userName", type="text" class="inputc" onchange="generatePassword()" required /></td>
                     <td><font color="red">Required</font></td>
                 </tr>
                 <tr>
                     <td>Salt: </td>
-                    <td><input id="salt", type="text" class="inputc" /></td>
+                    <td><input id="salt", type="text" class="inputc" onchange="generatePassword()" /></td>
                     <td><font color="black">Optional</font></td>
                 </tr>
                 <tr>
                     <td>Round: </td>
-                    <td><input id="round" type="number" class="inputc" value="1" /></td>
+                    <td><input id="round" type="number" class="inputc" value="23" onchange="generatePassword()" /></td>
                     <td><font color="black">Optional</font> <label id="err_round" style="color: red;"></label></td>
                 </tr>
                 <tr>
                     <td>Length: </td>
-                    <td><input id="lengthx" type="number" class="inputc" value="23" required /></td>
+                    <td><input id="lengthx" type="number" class="inputc" value="23" onchange="generatePassword()" required /></td>
                     <td><font color="red">Required</font> <label id="err_length" style="color: red;"></label></td>
                 </tr>
                 <tr>
@@ -162,7 +163,6 @@
     </div>
     <br>
     <script>
-
 
         let passwordId = document.getElementById('ans_password');
         

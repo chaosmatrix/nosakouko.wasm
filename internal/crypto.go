@@ -99,8 +99,14 @@ func getPythonHashAlgorithm(s string) string {
 	} else if strings.HasPrefix(s, "PBKDF2-") {
 		i = len("PBKDF2-")
 	}
+	s = s[i:]
+	if strings.Contains(s, "SHA-") {
+		s = strings.ReplaceAll(s, "-", "")
+	} else if strings.Contains(s, "SHA3-") {
+		s = strings.Replace(s, "-", "_", 1)
+	}
 
-	return strings.ToLower(strings.ReplaceAll(s[i:], "-", ""))
+	return strings.ToLower(s)
 }
 
 func (ci *CryptoInfo) GeneratePythonCode() string {
