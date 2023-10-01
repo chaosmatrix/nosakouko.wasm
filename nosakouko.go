@@ -31,19 +31,20 @@ func GeneratePassword() js.Func {
 		}
 
 		ci := internal.CryptoInfo{
-			Algorithm:  obj.Get("algorithm").String(),
-			PrimaryKey: obj.Get("primaryKey").String(),
-			SecretFile: obj.Get("secretFile").String(),
-			Site:       obj.Get("site").String(),
-			UserName:   obj.Get("userName").String(),
-			Salt:       obj.Get("salt").String(),
-			Round:      round,
-			Length:     lengthx,
+			Algorithm:   obj.Get("algorithm").String(),
+			PrimaryKey:  obj.Get("primaryKey").String(),
+			SecretFile:  obj.Get("secretFile").String(),
+			Site:        obj.Get("site").String(),
+			UserName:    obj.Get("userName").String(),
+			Salt:        obj.Get("salt").String(),
+			Round:       round,
+			Length:      lengthx,
+			EncoderName: obj.Get("encoderName").String(),
 		}
 
 		errs, nerr := ci.Check()
 		for en, ev := range errs {
-			js.Global().Get("err_"+en).Set("innerHTML", ev)
+			js.Global().Get("err_"+en).Set("textContent", ev)
 		}
 		if nerr != nil {
 			return nil
@@ -58,7 +59,7 @@ func GeneratePassword() js.Func {
 			reject := args[1]
 
 			if err != nil {
-				js.Global().Get("ans_password").Set("innerHTML", fmt.Sprintf("Error: %s", err.Error()))
+				js.Global().Get("ans_password").Set("textContent", fmt.Sprintf("Error: %s", err.Error()))
 				reject.Invoke(err.Error())
 				return nil
 			}
@@ -69,15 +70,15 @@ func GeneratePassword() js.Func {
 				password, err := ci.GeneratePassword()
 
 				if err != nil {
-					js.Global().Get("ans_stars").Set("innerHTML", err.Error())
-					js.Global().Get("ans_password").Set("innerHTML", err.Error())
-					js.Global().Get("ans_crypto_mask").Set("innerHTML", "")
-					js.Global().Get("ans_python_code").Set("innerHTML", "")
+					js.Global().Get("ans_stars").Set("textContent", err.Error())
+					js.Global().Get("ans_password").Set("textContent", err.Error())
+					js.Global().Get("ans_crypto_mask").Set("textContent", "")
+					js.Global().Get("ans_python_code").Set("textContent", "")
 				} else {
-					js.Global().Get("ans_stars").Set("innerHTML", "**********************")
-					js.Global().Get("ans_password").Set("innerHTML", password)
-					js.Global().Get("ans_crypto_mask").Set("innerHTML", ci.GetMask())
-					js.Global().Get("ans_python_code").Set("innerHTML", ci.GeneratePythonCode())
+					js.Global().Get("ans_stars").Set("textContent", "**********************")
+					js.Global().Get("ans_password").Set("textContent", password)
+					js.Global().Get("ans_crypto_mask").Set("textContent", ci.GetMask())
+					js.Global().Get("ans_python_code").Set("textContent", ci.GeneratePythonCode())
 				}
 				// Resolve the Promise
 				resolve.Invoke(password)
@@ -87,7 +88,7 @@ func GeneratePassword() js.Func {
 			return nil
 		})
 
-		js.Global().Get("ans_password").Set("innerHTML", "password generating ...")
+		js.Global().Get("ans_password").Set("textContent", "password generating ...")
 
 		// return Promise object about the handler
 		// in js, use async/await to make sure handler(promise) execute

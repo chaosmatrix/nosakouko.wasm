@@ -1,12 +1,15 @@
-import hashlib,hmac,base64
+#
+# python3
+from hashlib import pbkdf2_hmac
+import base64
 
-key = ""
-data = ""
+key = bytes("******", "utf-8")
+data = bytes("bbbbbbbbccccccccdddddddd", "utf-8")
 length = 23
-round = 2
+round = 13
 res = ""
-for i in range(round):
-	h = hmac.new(key, data, hashlib.sha256)
-	key = h.digest()
-res = base64.urlsafe_b64encode(h.digest())[:length]
-print(res)
+h = pbkdf2_hmac('sha256', key, data, round, length)
+key = h
+
+res = base64.urlsafe_b64encode(key)[:length]
+print(res.decode())
