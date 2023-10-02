@@ -47,133 +47,149 @@
     <div>
         <table>
             <tr>
-                <td>Algorithm: </td>
-                <td><select name="algorithm" id="algorithm" class="inputc" onchange="generatePassword()">
-                        <option value="HMAC-BLAKE2b-256">HMAC-BLAKE2b-256</option>
-                        <option value="HMAC-BLAKE2b-384">HMAC-BLAKE2b-384</option>
-                        <option value="HMAC-BLAKE2b-512">HMAC-BLAKE2b-512</option>
-                        <option value="HMAC-BLAKE2s-256">HMAC-BLAKE2s-256</option>
-                        <option value="HMAC-SHA-1">HMAC-SHA-1</option>
-                        <option value="HMAC-SHA-224">HMAC-SHA-224</option>
-                        <option value="HMAC-SHA-256">HMAC-SHA-256</option>
-                        <option value="HMAC-SHA-384">HMAC-SHA-384</option>
-                        <option value="HMAC-SHA-512">HMAC-SHA-512</option>
-                        <option value="HMAC-SHA-512/224">HMAC-SHA-512/224</option>
-                        <option value="HMAC-SHA-512/256">HMAC-SHA-512/256</option>
-                        <option value="HMAC-SHA3-224">HMAC-SHA3-224</option>
-                        <option value="HMAC-SHA3-256">HMAC-SHA3-256</option>
-                        <option value="HMAC-SHA3-384">HMAC-SHA3-384</option>
-                        <option value="HMAC-SHA3-512">HMAC-SHA3-512</option>
-
-                        <option value="HKDF-BLAKE2b-256">HKDF-BLAKE2b-256</option>
-                        <option value="HKDF-BLAKE2b-384">HKDF-BLAKE2b-384</option>
-                        <option value="HKDF-BLAKE2b-512">HKDF-BLAKE2b-512</option>
-                        <option value="HKDF-BLAKE2s-256">HKDF-BLAKE2s-256</option>
-                        <option value="HKDF-SHA-1">HKDF-SHA-1</option>
-                        <option value="HKDF-SHA-224">HKDF-SHA-224</option>
-                        <option value="HKDF-SHA-256">HKDF-SHA-256</option>
-                        <option value="HKDF-SHA-384">HKDF-SHA-384</option>
-                        <option value="HKDF-SHA-512">HKDF-SHA-512</option>
-                        <option value="HKDF-SHA-512/224">HKDF-SHA-512/224</option>
-                        <option value="HKDF-SHA-512/256">HKDF-SHA-512/256</option>
-                        <option value="HKDF-SHA3-224">HKDF-SHA3-224</option>
-                        <option value="HKDF-SHA3-256">HKDF-SHA3-256</option>
-                        <option value="HKDF-SHA3-384">HKDF-SHA3-384</option>
-                        <option value="HKDF-SHA3-512">HKDF-SHA3-512</option>
-
-                        <option value="PBKDF2-BLAKE2s-256">PBKDF2-BLAKE2s-256</option>
-                        <option value="PBKDF2-BLAKE2b-256">PBKDF2-BLAKE2b-256</option>
-                        <option value="PBKDF2-BLAKE2b-384">PBKDF2-BLAKE2b-384</option>
-                        <option value="PBKDF2-BLAKE2b-512">PBKDF2-BLAKE2b-512</option>
-                        <option value="PBKDF2-SHA-1">PBKDF2-SHA-1</option>
-                        <option value="PBKDF2-SHA-224">PBKDF2-SHA-224</option>
-                        <option value="PBKDF2-SHA-256" selected="selected">PBKDF2-SHA-256</option>
-                        <option value="PBKDF2-SHA-384">PBKDF2-SHA-384</option>
-                        <option value="PBKDF2-SHA-512">PBKDF2-SHA-512</option>
-                        <option value="PBKDF2-SHA-512/224">PBKDF2-SHA-512/224</option>
-                        <option value="PBKDF2-SHA-512/256">PBKDF2-SHA-512/256</option>
-                        <option value="PBKDF2-SHA3-224">PBKDF2-SHA3-224</option>
-                        <option value="PBKDF2-SHA3-256">PBKDF2-SHA3-256</option>
-                        <option value="PBKDF2-SHA3-384">PBKDF2-SHA3-384</option>
-                        <option value="PBKDF2-SHA3-512">PBKDF2-SHA3-512</option>
-
-                        <option value="argon2i">Argon2i</option>
-                        <option value="argon2id">Argon2id</option>
-                        <option value="scrypt">Scrypt</option>
-                    </select>
+                <td>Options: </td>
+                <td><input type="radio" id="basicx" name="options" value="Basic" onchange="showOptions('basic')"
+                        checked />
+                    <label for="basic">Basic</label>
+                    <input type="radio" id="advancex" name="options" value="Advance"
+                        onchange="showOptions('advance')" />
+                    <label for="advance">Advance</label>
                 </td>
-                <td>
-                    <font color="red">Require</font><label id="err_algorithm" style="color: red;"></label>
-                </td>
-            </tr>
-            <tr>
-                <td>PrimaryKey: </td>
-                <td><input id="primaryKey" type="password" class="inputc" onmouseleave="setPasswordHide()"
-                        ondblclick="setPasswordVisible()" onchange="generatePassword()" required /></td>
-                <td>
-                    <font color="red">Require</font>
-                </td>
-            </tr>
-            <tr style="display: none;">
-                <!-- not implement -->
-                <td>SecretFile: </td>
-                <td><input id="secretFile" type="file" class="inputc" /></td>
-                <td>
-                    <font color="black">Optional-(unsupport)</font>
-                </td>
-            </tr>
-            <tr>
-                <td>Site: </td>
-                <td><input id="site" type="text" class="inputc" onchange="generatePassword()" /></td>
-                <td>
-                    <font color="red">Require</font>
-                </td>
-            </tr>
-            <tr>
-                <td>UserName: </td>
-                <td><input id="userName" , type="text" class="inputc" onchange="generatePassword()" required /></td>
-                <td>
-                    <font color="red">Require</font>
-                </td>
-            </tr>
-            <tr>
-                <td>Salt: </td>
-                <td><input id="salt" , type="text" class="inputc" onchange="generatePassword()" /></td>
-                <td>
-                    <font color="black">Optional</font>
-                </td>
-            </tr>
-            <tr>
-                <td>Round: </td>
-                <td><input id="round" type="number" class="inputc" value="13" onchange="generatePassword()" /></td>
-                <td>
-                    <font color="red">Require</font> <label id="err_round" style="color: red;"></label>
-                </td>
-            </tr>
-            <tr>
-                <td>Length: </td>
-                <td><input id="lengthx" type="number" class="inputc" value="23" onchange="generatePassword()"
-                        required /></td>
-                <td>
-                    <font color="red">Require</font> <label id="err_length" style="color: red;"></label>
-                </td>
-            </tr>
-            <tr>
-                <td>Encoder: </td>
-                <td><select name="encoderName" id="encoderName" class="inputc" onchange="generatePassword()">
-                        <option value="ascii85">Ascii85</option>
-                        <option value="base64" selected="selected">Base64</option>
-                    </select>
-                </td>
-                <td>
-                    <font color="red">Require</font> <label id="err_encoderName" style="color: red;"></label>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td><button id="b_send" type="submit" class="inputc" onclick="generatePassword()">Generate</button></td>
                 <td></td>
             </tr>
+
+            <form id="form-disable-submit" action="" method="post">
+                <tr id="trIdalgorithm" style="display: none;">
+                    <td>Algorithm: </td>
+                    <td><select name="algorithm" id="algorithm" class="inputc" onchange="generatePassword()">
+                            <option value="HMAC-BLAKE2b-256">HMAC-BLAKE2b-256</option>
+                            <option value="HMAC-BLAKE2b-384">HMAC-BLAKE2b-384</option>
+                            <option value="HMAC-BLAKE2b-512">HMAC-BLAKE2b-512</option>
+                            <option value="HMAC-BLAKE2s-256">HMAC-BLAKE2s-256</option>
+                            <option value="HMAC-SHA-1">HMAC-SHA-1</option>
+                            <option value="HMAC-SHA-224">HMAC-SHA-224</option>
+                            <option value="HMAC-SHA-256">HMAC-SHA-256</option>
+                            <option value="HMAC-SHA-384">HMAC-SHA-384</option>
+                            <option value="HMAC-SHA-512">HMAC-SHA-512</option>
+                            <option value="HMAC-SHA-512/224">HMAC-SHA-512/224</option>
+                            <option value="HMAC-SHA-512/256">HMAC-SHA-512/256</option>
+                            <option value="HMAC-SHA3-224">HMAC-SHA3-224</option>
+                            <option value="HMAC-SHA3-256">HMAC-SHA3-256</option>
+                            <option value="HMAC-SHA3-384">HMAC-SHA3-384</option>
+                            <option value="HMAC-SHA3-512">HMAC-SHA3-512</option>
+
+                            <option value="HKDF-BLAKE2b-256">HKDF-BLAKE2b-256</option>
+                            <option value="HKDF-BLAKE2b-384">HKDF-BLAKE2b-384</option>
+                            <option value="HKDF-BLAKE2b-512">HKDF-BLAKE2b-512</option>
+                            <option value="HKDF-BLAKE2s-256">HKDF-BLAKE2s-256</option>
+                            <option value="HKDF-SHA-1">HKDF-SHA-1</option>
+                            <option value="HKDF-SHA-224">HKDF-SHA-224</option>
+                            <option value="HKDF-SHA-256">HKDF-SHA-256</option>
+                            <option value="HKDF-SHA-384">HKDF-SHA-384</option>
+                            <option value="HKDF-SHA-512">HKDF-SHA-512</option>
+                            <option value="HKDF-SHA-512/224">HKDF-SHA-512/224</option>
+                            <option value="HKDF-SHA-512/256">HKDF-SHA-512/256</option>
+                            <option value="HKDF-SHA3-224">HKDF-SHA3-224</option>
+                            <option value="HKDF-SHA3-256">HKDF-SHA3-256</option>
+                            <option value="HKDF-SHA3-384">HKDF-SHA3-384</option>
+                            <option value="HKDF-SHA3-512">HKDF-SHA3-512</option>
+
+                            <option value="PBKDF2-BLAKE2s-256">PBKDF2-BLAKE2s-256</option>
+                            <option value="PBKDF2-BLAKE2b-256">PBKDF2-BLAKE2b-256</option>
+                            <option value="PBKDF2-BLAKE2b-384">PBKDF2-BLAKE2b-384</option>
+                            <option value="PBKDF2-BLAKE2b-512">PBKDF2-BLAKE2b-512</option>
+                            <option value="PBKDF2-SHA-1">PBKDF2-SHA-1</option>
+                            <option value="PBKDF2-SHA-224">PBKDF2-SHA-224</option>
+                            <option value="PBKDF2-SHA-256" selected="selected">PBKDF2-SHA-256</option>
+                            <option value="PBKDF2-SHA-384">PBKDF2-SHA-384</option>
+                            <option value="PBKDF2-SHA-512">PBKDF2-SHA-512</option>
+                            <option value="PBKDF2-SHA-512/224">PBKDF2-SHA-512/224</option>
+                            <option value="PBKDF2-SHA-512/256">PBKDF2-SHA-512/256</option>
+                            <option value="PBKDF2-SHA3-224">PBKDF2-SHA3-224</option>
+                            <option value="PBKDF2-SHA3-256">PBKDF2-SHA3-256</option>
+                            <option value="PBKDF2-SHA3-384">PBKDF2-SHA3-384</option>
+                            <option value="PBKDF2-SHA3-512">PBKDF2-SHA3-512</option>
+
+                            <option value="argon2i">Argon2i</option>
+                            <option value="argon2id">Argon2id</option>
+                            <option value="scrypt">Scrypt</option>
+                        </select>
+                    </td>
+                    <td>
+                        <font color="red">Require</font><label id="err_algorithm" style="color: red;"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td>PrimaryKey: </td>
+                    <td><input id="primaryKey" type="password" class="inputc" onmouseleave="setPasswordHide()"
+                            ondblclick="setPasswordVisible()" onchange="generatePassword()" required /></td>
+                    <td>
+                        <font color="red">Require</font>
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <!-- not implement -->
+                    <td>SecretFile: </td>
+                    <td><input id="secretFile" type="file" class="inputc" /></td>
+                    <td>
+                        <font color="black">Optional-(unsupport)</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Site: </td>
+                    <td><input id="site" type="text" class="inputc" onchange="generatePassword()" required /></td>
+                    <td>
+                        <font color="red">Require</font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>UserName: </td>
+                    <td><input id="userName" , type="text" class="inputc" onchange="generatePassword()" required /></td>
+                    <td>
+                        <font color="red">Require</font>
+                    </td>
+                </tr>
+                <tr id="trIdsalt" style="display: none;">
+                    <td>Salt: </td>
+                    <td><input id="salt" , type="text" class="inputc" onchange="generatePassword()" /></td>
+                    <td>
+                        <font color="black">Optional</font>
+                    </td>
+                </tr>
+                <tr id="trIdround" style="display: none;">
+                    <td>Round: </td>
+                    <td><input id="round" type="number" class="inputc" value="13" onchange="generatePassword()" /></td>
+                    <td>
+                        <font color="red">Require</font> <label id="err_round" style="color: red;"></label>
+                    </td>
+                </tr>
+                <tr id="trIdlengthx" style="display: none;">
+                    <td>Length: </td>
+                    <td><input id="lengthx" type="number" class="inputc" value="23" onchange="generatePassword()"
+                            required /></td>
+                    <td>
+                        <font color="red">Require</font> <label id="err_length" style="color: red;"></label>
+                    </td>
+                </tr>
+                <tr id="trIdencoderName" style="display: none;">
+                    <td>Encoder: </td>
+                    <td><select name="encoderName" id="encoderName" class="inputc" onchange="generatePassword()">
+                            <option value="ascii85">Ascii85</option>
+                            <option value="base64" selected="selected">Base64</option>
+                        </select>
+                    </td>
+                    <td>
+                        <font color="red">Require</font> <label id="err_encoderName" style="color: red;"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button id="b_send" type="submit" class="inputc" onclick="generatePassword()">Generate</button>
+                    </td>
+                    <td></td>
+                </tr>
+            </form>
+
         </table>
     </div>
     <br>
@@ -202,6 +218,38 @@
     </div>
     <br>
     <script>
+
+        const formDisableSubmit = document.getElementById('form-disable-submit');
+
+        formDisableSubmit.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+        });
+
+        const showOptions = function (opt) {
+            var advObj = { 'trIdalgorithm': '', 'trIdsalt': '', 'trIdround': '', 'trIdlengthx': '', 'trIdencoderName': '' };
+
+            for (var prop in advObj) {
+                var vk = document.getElementById(prop);
+                if (opt == "basic") {
+                    vk.style.display = 'none'
+                } else if (opt == "advance") {
+                    vk.style.display = advObj[prop];
+                }
+            }
+
+            document.getElementById('form-disable-submit').reset();
+            cleanAllResult();
+        }
+
+        const cleanAllResult = function () {
+            var ansObj = { 'ans_password': '', 'ans_stars': '', 'ans_crypto_mask': '', 'ans_python_code': '' };
+
+            for (var prop in ansObj) {
+                var vk = document.getElementById(prop);
+                vk.textContent = '';
+            }
+        }
 
         const setPasswordVisible = function () {
             var pk = document.getElementById("primaryKey");
