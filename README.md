@@ -34,18 +34,19 @@ The Algorithm and PrimaryKey are the keys to remaining the generated password sa
 | base85/ascii85 | 85 | |
 
 ### Option Table
-| Name | Private | Require | Comment |
-| -- | -- | -- | -- |
-| Algorithm | *  | Y | |
-| Round | * | Y | |
-| Length | * | Y | |
-| PrimaryKey | Y | Y | |
-| SecretFile | Y | Y | not implement |
-| Site | * | Y | |
-| UserName | * | Y | |
-| Salt | * | * |  |
-| Encoder | * | Y |  |
+| Name | Private | Require | Default | Comment |
+| -- | -- | -- | -- | -- |
+| Algorithm | *  | Y | **PBKDF2-SHA-256** | |
+| Round | * | Y | **13** | |
+| Length | * | Y | **23** | |
+| PrimaryKey | **Y** | Y | | |
+| SecretFile | **Y** | Y | | not implement |
+| Site | * | Y | | |
+| UserName | * | Y | | |
+| Salt | * | * |  | |
+| Encoder | * | Y | **[Base64]** | |
 
+[Base64]:https://en.wikipedia.org/wiki/Base64
 
 ## Reference
 1. [RFC4648 - The Base16, Base32, and Base64 Data Encodings](https://datatracker.ietf.org/doc/html/rfc4648.html)
@@ -54,4 +55,6 @@ The Algorithm and PrimaryKey are the keys to remaining the generated password sa
 4. [Base64](https://en.wikipedia.org/wiki/Base64)
 5. [ASCII - Printable characters](https://en.wikipedia.org/wiki/ASCII#Printable_characters)
 6. [Password strength](https://en.wikipedia.org/wiki/Password_strength)
-7. [Kouko Nosa - Anime Character](https://hai-furi.fandom.com/wiki/Kouko_Nosa)
+7. [Key derivation function](https://en.wikipedia.org/wiki/Key_derivation_function)
+8. [OWASP - Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+9. [Kouko Nosa - Anime Character](https://hai-furi.fandom.com/wiki/Kouko_Nosa)

@@ -7,23 +7,23 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"hash"
 	"strconv"
 	"strings"
 	"text/template"
 
 	"crypto/hmac"
-	_ "crypto/md5"
 	_ "crypto/sha1"
 	_ "crypto/sha256"
 	_ "crypto/sha512"
 
+	"golang.org/x/crypto/argon2"
 	_ "golang.org/x/crypto/blake2b"
 	_ "golang.org/x/crypto/blake2s"
 	"golang.org/x/crypto/hkdf"
 	"golang.org/x/crypto/pbkdf2"
+	"golang.org/x/crypto/scrypt"
 	_ "golang.org/x/crypto/sha3"
-	//_ "golang.org/x/crypto/md4"
-	//_ "golang.org/x/crypto/ripemd160"
 )
 
 type CryptoInfo struct {
@@ -54,8 +54,8 @@ func (ci *CryptoInfo) Check() (map[string]string, error) {
 	if ci.Round <= 0 {
 		errs["round"] = "round must greater than 0"
 		err = errors.New(errs["round"])
-	} else if ci.Round >= 65536 {
-		errs["round"] = "round must less than 65536"
+	} else if ci.Round >= 4294967295 {
+		errs["round"] = "round must less than 4294967295"
 		err = errors.New(errs["round"])
 	}
 
@@ -63,7 +63,7 @@ func (ci *CryptoInfo) Check() (map[string]string, error) {
 		errs["length"] = "length must greater than 0"
 		err = errors.New(errs["length"])
 	} else if ci.Length >= 65536 {
-		errs["length"] = "length must less than 65556"
+		errs["length"] = "length must less than 65536"
 		err = errors.New(errs["length"])
 	}
 
@@ -129,29 +129,32 @@ from {{.Hashlib}} import pbkdf2_hmac
 import base64
 {{- end }}
 
-key = bytes("{{.Key}}", "utf-8")
+password = bytes("{{.Key}}", "utf-8")
 data = bytes("{{.Data}}", "utf-8")
 length = {{.Length}}
 round = {{.Round}}
-res = ""
+res = b''
 
-{{- if .IsHMAC }}
-for i in range(round):
-	h = hmac.new(key, data, {{.Hashlib}}.{{.HashName}})
-	key = h.digest()
-{{- else if .IsPBKDF2HMAC }}
-h = pbkdf2_hmac('sha256', key, data, round, length)
-key = h
-{{- end }}
+key = password
+while len(res) < length:
+	{{- if .IsHMAC }}
+	for i in range(round):
+		h = hmac.new(key, data, {{.Hashlib}}.{{.HashName}})
+		key = h.digest()
 
-res = base64.{{ .B64Encoder }}(key)[:length]
-print(res.decode())
+	{{- else if .IsPBKDF2HMAC }}
+	h = pbkdf2_hmac('sha256', key, data, round, length)
+	key = h
+	{{- end }}
+	res = res + key
+
+res = base64.{{ .B64Encoder }}(res[:length])
+print(res.decode()[:length])
 `
 
 	ss := strings.Split(ci.Algorithm, "-")
 	hmacName := go2pykdf[ss[0]]
-	shaName := ss[1]
-	if hmacName == "" || !strings.HasPrefix(shaName, "SHA") {
+	if hmacName == "" || !strings.HasPrefix(ss[1], "SHA") {
 		return ""
 	}
 
@@ -187,35 +190,18 @@ print(res.decode())
 
 func (ci *CryptoInfo) GeneratePassword() (string, error) {
 
-	bs := []byte{}
+	var bs []byte
 	var err error
-	if f, found := hmacs[ci.Algorithm]; found {
-		key := []byte(ci.PrimaryKey)
-		for i := 0; i < ci.Round; i++ {
-			bs, err = f(key, []byte(ci.Site+ci.UserName+ci.Salt))
-			if err != nil {
-				return "", err
-			}
-			key = bs
-		}
-	}
 
-	if f, found := hkdfs[ci.Algorithm]; found {
-		key := []byte(ci.PrimaryKey)
-		for i := 0; i < ci.Round; i++ {
-			bs, err = f(key, []byte(ci.Salt), []byte(ci.Site+ci.UserName), ci.Length)
-			if err != nil {
-				return "", err
-			}
-			key = bs
-		}
-	}
-
-	if f, found := pbkdf2s[ci.Algorithm]; found {
+	if f, found := kdfs[ci.Algorithm]; found {
 		bs, err = f([]byte(ci.PrimaryKey), []byte(ci.Site+ci.UserName+ci.Salt), ci.Round, ci.Length)
-		if err != nil {
-			return "", err
-		}
+	} else {
+		err = fmt.Errorf("invalid algorithm %s", ci.Algorithm)
+		return "", err
+	}
+
+	if err != nil {
+		return "", err
 	}
 
 	var s string
@@ -227,6 +213,8 @@ func (ci *CryptoInfo) GeneratePassword() (string, error) {
 		n := ascii85.Encode(dst, bs)
 		s = string(dst[:n])
 	default:
+		err = fmt.Errorf("invalid encoder %s", ci.EncoderName)
+		return "", err
 	}
 
 	if len(s) < ci.Length {
@@ -236,107 +224,118 @@ func (ci *CryptoInfo) GeneratePassword() (string, error) {
 	return s[:ci.Length], nil
 }
 
-var hmacs = map[string]func(key []byte, data []byte) ([]byte, error){}
-var hkdfs = map[string]func(key []byte, salt []byte, data []byte, length int) ([]byte, error){}
-var pbkdf2s = map[string]func(password, salt []byte, round, length int) ([]byte, error){}
+var kdfs = map[string]func(password []byte, salt []byte, round int, length int) ([]byte, error){
+	"argon2id": argon2id,
+	"argon2i":  argon2i,
+	"scrypt":   scryptKDF,
+}
 
 func init() {
 	initBuiltinKDFS()
 }
 
 func IsValidAlgorithm(s string) bool {
-	if _, found := hmacs[s]; found {
-		return found
-	}
-	if _, found := hkdfs[s]; found {
-		return found
-	}
-	if _, found := pbkdf2s[s]; found {
+	if _, found := kdfs[s]; found {
 		return found
 	}
 	return false
 }
 
 func GetAlgorithms() []string {
-	res := make([]string, len(hmacs)+len(hkdfs)+len(pbkdf2s))
+	res := make([]string, len(kdfs))
 	i := 0
-	for k, _ := range hmacs {
-		res[i] = k
-		i++
-	}
-	for k, _ := range hkdfs {
-		res[i] = k
-		i++
-	}
-	for k, _ := range pbkdf2s {
+	for k := range kdfs {
 		res[i] = k
 		i++
 	}
 	return res
 }
 
-func getHMACName(s string) string {
-	return "HMAC-" + s
-}
-
-func getHKDFName(s string) string {
-	return "HKDF-" + s
-}
-
-func getPBKDF2Name(s string) string {
-	return "PBKDF2-" + s
-}
-
 func initBuiltinKDFS() {
+	kdfprefixs := []string{"HMAC-", "HKDF-", "PBKDF2-"}
 	for i := crypto.MD4; i < 32; i++ {
 		if !i.Available() {
 			continue
 		}
-		hmacName := getHMACName(i.String())
-		if _, exist := hmacs[hmacName]; exist {
-			panic(fmt.Errorf("hmac function %s already exist", hmacName))
-		} else {
-			h := i.New
-			hmacs[hmacName] = func(key, data []byte) ([]byte, error) {
-				hm := hmac.New(h, key)
-				n, err := hm.Write(data)
-				if n != len(data) || err != nil {
-					if err != nil {
-						err = errors.New("failed to write all data")
+		for _, ps := range kdfprefixs {
+			name := ps + i.String()
+			if _, exist := kdfs[name]; exist {
+				panic(fmt.Errorf("kdf %s already exist", name))
+			} else {
+				h := i.New
+				switch ps {
+				case "HMAC-":
+					kdfs[name] = func(password, salt []byte, round, length int) ([]byte, error) {
+						return hmacKey(h, password, salt, round, length)
 					}
-					return []byte{}, err
-				}
-				return hm.Sum(nil), nil
-			}
-		}
-
-		hkdfName := getHKDFName(i.String())
-		if _, exist := hkdfs[hkdfName]; exist {
-			panic(fmt.Errorf("hkdf function %s already exist", hmacName))
-		} else {
-			h := i.New
-			hkdfs[hkdfName] = func(key, salt, data []byte, length int) ([]byte, error) {
-				rd := hkdf.New(h, key, salt, data)
-				bs := make([]byte, length)
-				n, err := rd.Read(bs)
-				if n != length || err != nil {
-					if err == nil {
-						err = fmt.Errorf("require length %d, but only %d bytes read", length, n)
+				case "HKDF-":
+					kdfs[name] = func(password, salt []byte, round, length int) ([]byte, error) {
+						return hkdfKey(h, password, salt, round, length)
 					}
-					return []byte{}, err
+				case "PBKDF2-":
+					kdfs[name] = func(password, salt []byte, round, length int) ([]byte, error) {
+						return pbkdf2Key(h, password, salt, round, length)
+					}
 				}
-				return bs, nil
-			}
-		}
-
-		pbkdf2Name := getPBKDF2Name(i.String())
-		if _, exist := pbkdf2s[pbkdf2Name]; exist {
-			panic(fmt.Errorf("pbkdf2 function %s already exist", pbkdf2Name))
-		} else {
-			h := i.New
-			pbkdf2s[pbkdf2Name] = func(password, salt []byte, round, length int) ([]byte, error) {
-				return pbkdf2.Key(password, salt, round, length, h), nil
 			}
 		}
 	}
+}
+
+func hmacKey(h func() hash.Hash, password []byte, salt []byte, round int, length int) (key []byte, err error) {
+
+	key = make([]byte, length)
+
+	k := password
+	for l := 0; l < len(key); {
+		for i := 0; i < round; i++ {
+			hm := hmac.New(h, k)
+			n, err := hm.Write(salt)
+			if n != len(salt) || err != nil {
+				if err != nil {
+					err = errors.New("failed to write all data")
+				}
+				return []byte{}, err
+			}
+			k = hm.Sum(nil)
+		}
+		copy(key[l:], k)
+		l += len(k)
+	}
+	return
+}
+
+func hkdfKey(h func() hash.Hash, password []byte, salt []byte, round int, length int) (key []byte, err error) {
+
+	key = password
+	buf := make([]byte, length)
+	for i := 0; i < round; i++ {
+		rd := hkdf.New(h, key, salt, nil)
+		n, err := rd.Read(buf)
+		if n != length || err != nil {
+			if err == nil {
+				err = fmt.Errorf("require length %d, but only %d bytes read", length, n)
+			}
+			return []byte{}, err
+		}
+		key = buf
+	}
+	return
+}
+
+func pbkdf2Key(h func() hash.Hash, password []byte, salt []byte, round int, length int) ([]byte, error) {
+	return pbkdf2.Key(password, salt, round, length, h), nil
+}
+
+// argon2
+func argon2id(password []byte, salt []byte, round int, length int) ([]byte, error) {
+	return argon2.IDKey(password, salt, uint32(round), 2*1024, 1, uint32(length)), nil
+}
+
+func argon2i(password []byte, salt []byte, round int, length int) ([]byte, error) {
+	return argon2.Key(password, salt, uint32(round), 2*1024, 1, uint32(length)), nil
+}
+
+func scryptKDF(password []byte, salt []byte, round int, length int) ([]byte, error) {
+	return scrypt.Key(password, salt, 32768, round, 1, length)
 }
